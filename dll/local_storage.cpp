@@ -16,6 +16,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include "local_storage.h"
+#include <codecvt>
 
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_STATIC
@@ -574,6 +575,24 @@ int Local_Storage::get_file_data(std::string full_path, char *data, unsigned int
     return myfile.gcount();
 }
 
+int Local_Storage::get_file_data(std::string full_path, wchar_t *data, unsigned int max_length, unsigned int offset)
+{
+    std::wifstream myfile;
+    // Set UTF-8 mode
+    myfile.imbue(std::locale(std::locale(), new std::codecvt_utf8<wchar_t>));
+    myfile.open(utf8_decode(full_path));
+    if (!myfile.is_open()) return -1;
+
+    myfile.seekg(offset, std::ios::beg);
+    // Use reinterpret_cast to convert pointer type and multiply length by 2 (since wchar_t is 2 bytes)
+    myfile.read(data, max_length);
+    int read_count = myfile.gcount();
+    myfile.close();
+    reset_LastError();
+    // Return actual number of wchar_t characters read
+    return read_count;
+}
+
 int Local_Storage::get_data(std::string folder, std::string file, char *data, unsigned int max_length, unsigned int offset)
 {
     file = sanitize_file_name(file);
@@ -586,6 +605,13 @@ int Local_Storage::get_data(std::string folder, std::string file, char *data, un
 }
 
 int Local_Storage::get_data_settings(std::string file, char *data, unsigned int max_length)
+{
+    file = sanitize_file_name(file);
+    std::string full_path = get_global_settings_path() + file;
+    return get_file_data(full_path, data, max_length);
+}
+
+int Local_Storage::get_data_settings(std::string file, wchar_t *data, unsigned int max_length)
 {
     file = sanitize_file_name(file);
     std::string full_path = get_global_settings_path() + file;

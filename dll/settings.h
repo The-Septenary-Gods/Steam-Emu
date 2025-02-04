@@ -20,6 +20,8 @@
 
 #include "base.h"
 
+#define INVAILD_USER_NAME "INVAILD NAME";
+
 struct IP_PORT;
 
 struct DLC_entry {
@@ -65,10 +67,13 @@ struct Controller_Settings {
     std::map<std::string, std::map<std::string, std::pair<std::set<std::string>, std::string>>> action_set_layers;
 };
 
+std::string wideToUtf8(const std::wstring &wstr);
+
 class Settings {
     CSteamID steam_id;
     CGameID game_id;
-    std::string name, language;
+    std::wstring name;
+    std::string language;
     CSteamID lobby_id;
 
     bool unlockAllDLCs;
@@ -88,11 +93,12 @@ public:
     static const bool is_lobby_connect = false;
 #endif
     static std::string sanitize(std::string name);
-    Settings(CSteamID steam_id, CGameID game_id, std::string name, std::string language, bool offline);
+    static std::wstring sanitize(std::wstring name);
+    Settings(CSteamID steam_id, CGameID game_id, std::wstring name, std::string language, bool offline);
     CSteamID get_local_steam_id();
     CGameID get_local_game_id();
-    const char *get_local_name();
-    void set_local_name(char *name);
+    std::string get_local_name();
+    void set_local_name(wchar_t *name);
     const char *get_language();
     void set_language(char *language);
 

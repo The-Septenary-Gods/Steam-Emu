@@ -175,9 +175,8 @@ const char *GetPersonaName()
 {
     PRINT_DEBUG("Steam_Friends::GetPersonaName\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    const char *local_name = settings->get_local_name();
-    
-    return local_name;
+    std::string name = settings->get_local_name(); 
+    return name.c_str();
 }
 
 // Sets the player name, stores it on the server and publishes the changes to all friends who are online.
@@ -290,15 +289,16 @@ const char *GetFriendPersonaName( CSteamID steamIDFriend )
 {
     PRINT_DEBUG("Steam_Friends::GetFriendPersonaName %llu\n", steamIDFriend.ConvertToUint64());
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    const char *name = "Unknown User";
+    std::string name = "Unknown User";
     if (steamIDFriend == settings->get_local_steam_id()) {
         name = settings->get_local_name();
     } else {
         Friend *f = find_friend(steamIDFriend);
-        if (f) name = f->name().c_str();
+        if (f) {
+            name = f->name();
+        }
     }
-
-    return name;
+    return name.c_str();
 }
 
 

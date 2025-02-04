@@ -62,11 +62,11 @@ Run the commands:
 git clone https://github.com/Microsoft/vcpkg
 cd vcpkg
 ./bootstrap-vcpkg.bat
-./vcpkg install protobuf --triplet x86-windows-static
-./vcpkg install protobuf --triplet x64-windows-static
 cd ..
-git clone https://gitlab.com/Mr_Goldberg/goldberg_emulator.git
-cd goldberg_emulator
+git clone -b general https://github.com/The-Septenary-Gods/Steam-Emu.git
+cd Steam-Emu
+../vcpkg/vcpkg install --triplet x86-windows-static
+../vcpkg/vcpkg install --triplet x64-windows-static
 ```
 
 This should build and install all the dependencies and clone the repo. Some commands like the bootstrap-vcpkg.bat and vcpkg install might take a while.

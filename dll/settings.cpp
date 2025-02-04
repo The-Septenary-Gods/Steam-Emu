@@ -16,7 +16,25 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include "settings.h"
+#include <codecvt>
 
+std::string wideToUtf8(const std::wstring &wstr)
+{
+    try {
+        static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        std::string result = converter.to_bytes(wstr);
+
+        // If the result length is less than 17 bytes, pad it to 17 bytes.
+        // When result is less than 17 bytes, it shows as random garbage in game.
+        // Root cause unknown, might be related to protobuf.
+        if (result.length() < 17) {
+            result.resize(17, '\0');
+        }
+        return result;
+    } catch (const std::exception&) {
+        return INVAILD_USER_NAME;
+    }
+}
 
 std::string Settings::sanitize(std::string name)
 {
@@ -32,17 +50,27 @@ std::string Settings::sanitize(std::string name)
     return name;
 }
 
-Settings::Settings(CSteamID steam_id, CGameID game_id, std::string name, std::string language, bool offline)
+std::wstring Settings::sanitize(std::wstring name)
+{
+    name.erase(std::remove(name.begin(), name.end(), L'\n'), name.end());
+    name.erase(std::remove(name.begin(), name.end(), L'\r'), name.end());
+    for (auto &ch : name) {
+        if (!iswprint(ch))
+            ch = L' ';
+    }
+    return name;
+}
+
+Settings::Settings(CSteamID steam_id, CGameID game_id, std::wstring name, std::string language, bool offline)
 {
     this->steam_id = steam_id;
     this->game_id = game_id;
     this->name = sanitize(name);
     if (this->name.size() == 0) {
-        this->name = "  ";
+        this->name = L"  ";
     }
-
     if (this->name.size() == 1) {
-        this->name = this->name + " ";
+        this->name = this->name + L" ";
     }
 
     auto lang = sanitize(language);
@@ -51,7 +79,6 @@ Settings::Settings(CSteamID steam_id, CGameID game_id, std::string name, std::st
     this->language = lang;
     this->lobby_id = k_steamIDNil;
     this->unlockAllDLCs = true;
-
     this->offline = offline;
     this->create_unknown_leaderboards = true;
 }
@@ -66,9 +93,9 @@ CGameID Settings::get_local_game_id()
     return game_id;
 }
 
-const char *Settings::get_local_name()
+std::string Settings::get_local_name()
 {
-    return name.c_str();
+    return wideToUtf8(this->name);
 }
 
 const char *Settings::get_language()
@@ -76,7 +103,7 @@ const char *Settings::get_language()
     return language.c_str();
 }
 
-void Settings::set_local_name(char *name)
+void Settings::set_local_name(wchar_t *name)
 {
     this->name = name;
 }

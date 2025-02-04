@@ -1,0 +1,9 @@
+{
+  "name": "project-name",
+  "version": "1.0.0",
+  "builtin-baseline": "d504de05dcd7b55df34976be1c824324ec6bca2b",
+  "dependencies": ["protobuf", "abseil"],
+  "overrides": [
+    { "name": "protobuf", "version": "3.21.12#4" }
+  ]
+}

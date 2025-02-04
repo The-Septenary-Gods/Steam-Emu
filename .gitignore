@@ -15,3 +15,7 @@ rtlgenrandom*
 steamclient.exp
 steamclient.lib
 out/*
+vcpkg_installed/*
+
+!/build_*.bat
+!/build_*.sh

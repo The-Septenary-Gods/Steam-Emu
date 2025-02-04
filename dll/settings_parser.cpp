@@ -212,10 +212,10 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     load_custom_broadcasts(Local_Storage::get_game_settings_path() + "custom_broadcasts.txt", custom_broadcasts);
 
     // Acount name
-    char name[32] = {};
-    if (local_storage->get_data_settings("account_name.txt", name, sizeof(name) - 1) <= 0) {
-        strcpy(name, DEFAULT_NAME);
-        local_storage->store_data_settings("account_name.txt", name, strlen(name));
+    wchar_t name[32] = {};
+    if (local_storage->get_data_settings("account_name.txt", name, sizeof(name) - 2) <= 0) {
+        wcscpy(name, L"" DEFAULT_NAME);
+        //local_storage->store_data_settings("account_name.txt", name, wcslen(name) * 2);
     }
 
     // Language
@@ -353,8 +353,8 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
         }
     }
 
-    Settings *settings_client = new Settings(user_id, CGameID(appid), name, language, steam_offline_mode);
-    Settings *settings_server = new Settings(generate_steam_id_server(), CGameID(appid), name, language, steam_offline_mode);
+    Settings *settings_client = new Settings(user_id, CGameID(appid), std::wstring(name), language, steam_offline_mode);
+    Settings *settings_server = new Settings(generate_steam_id_server(), CGameID(appid), std::wstring(name), language, steam_offline_mode);
     settings_client->set_port(port);
     settings_server->set_port(port);
     settings_client->custom_broadcasts = custom_broadcasts;
