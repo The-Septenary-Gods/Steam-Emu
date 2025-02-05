@@ -212,9 +212,9 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     load_custom_broadcasts(Local_Storage::get_game_settings_path() + "custom_broadcasts.txt", custom_broadcasts);
 
     // Acount name
-    wchar_t name[32] = {};
-    if (local_storage->get_data_settings("account_name.txt", name, sizeof(name) - 2) <= 0) {
-        wcscpy(name, L"" DEFAULT_NAME);
+    std::wstring name = {};
+    if (local_storage->get_data_settings("account_name.txt", &name, MAX_NAME_LEN) <= 0) {
+        name = L"" DEFAULT_NAME;
         //local_storage->store_data_settings("account_name.txt", name, wcslen(name) * 2);
     }
 
@@ -333,7 +333,7 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
                     }
                 }
             } else if (p == "force_account_name.txt") {
-                int len = Local_Storage::get_file_data(steam_settings_path + "force_account_name.txt", name, sizeof(name) - 1);
+                int len = Local_Storage::get_file_data(steam_settings_path + "force_account_name.txt", &name, MAX_NAME_LEN);
                 if (len > 0) {
                     name[len] = 0;
                     warn_forced = true;
@@ -353,8 +353,8 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
         }
     }
 
-    Settings *settings_client = new Settings(user_id, CGameID(appid), std::wstring(name), language, steam_offline_mode);
-    Settings *settings_server = new Settings(generate_steam_id_server(), CGameID(appid), std::wstring(name), language, steam_offline_mode);
+    Settings *settings_client = new Settings(user_id, CGameID(appid), name, language, steam_offline_mode);
+    Settings *settings_server = new Settings(generate_steam_id_server(), CGameID(appid), name, language, steam_offline_mode);
     settings_client->set_port(port);
     settings_server->set_port(port);
     settings_client->custom_broadcasts = custom_broadcasts;

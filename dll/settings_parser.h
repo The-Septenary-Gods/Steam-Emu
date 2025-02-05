@@ -20,6 +20,10 @@
 #ifndef SETTINGS_PARSER_INCLUDE
 #define SETTINGS_PARSER_INCLUDE
 
+// If the name length is greater than this value,
+// it will cause unknown backend errors and API call failures.
+#define MAX_NAME_LEN 32
+
 //returns appid
 uint32 create_localstorage_settings(Settings **settings_client_out, Settings **settings_server_out, Local_Storage **local_storage_out);
 void save_global_settings(Local_Storage *local_storage, char *name, char *language);

@@ -575,7 +575,7 @@ int Local_Storage::get_file_data(std::string full_path, char *data, unsigned int
     return myfile.gcount();
 }
 
-int Local_Storage::get_file_data(std::string full_path, wchar_t *data, unsigned int max_length, unsigned int offset)
+int Local_Storage::get_file_data(std::string full_path, std::wstring *data, unsigned int max_length, unsigned int offset)
 {
     std::wifstream myfile;
     // Set UTF-8 mode
@@ -583,14 +583,19 @@ int Local_Storage::get_file_data(std::string full_path, wchar_t *data, unsigned 
     myfile.open(utf8_decode(full_path));
     if (!myfile.is_open()) return -1;
 
-    myfile.seekg(offset, std::ios::beg);
-    // Use reinterpret_cast to convert pointer type and multiply length by 2 (since wchar_t is 2 bytes)
-    myfile.read(data, max_length);
-    int read_count = myfile.gcount();
-    myfile.close();
-    reset_LastError();
+    // Read the file into the string
+    data->assign(
+        std::istreambuf_iterator<wchar_t>(myfile),
+        std::istreambuf_iterator<wchar_t>()
+    );
+
+    // If the file is longer than max_length, cut the string short
+    if (data->length() > max_length) {
+        data->resize(max_length);
+    }
+
     // Return actual number of wchar_t characters read
-    return read_count;
+    return data->length();
 }
 
 int Local_Storage::get_data(std::string folder, std::string file, char *data, unsigned int max_length, unsigned int offset)
@@ -611,7 +616,7 @@ int Local_Storage::get_data_settings(std::string file, char *data, unsigned int 
     return get_file_data(full_path, data, max_length);
 }
 
-int Local_Storage::get_data_settings(std::string file, wchar_t *data, unsigned int max_length)
+int Local_Storage::get_data_settings(std::string file, std::wstring *data, unsigned int max_length)
 {
     file = sanitize_file_name(file);
     std::string full_path = get_global_settings_path() + file;

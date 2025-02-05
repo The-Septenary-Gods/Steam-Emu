@@ -61,7 +61,7 @@ public:
     static std::string get_user_appdata_path();
     Local_Storage(std::string save_directory);
     static int get_file_data(std::string full_path, char *data, unsigned int max_length, unsigned int offset=0);
-    static int get_file_data(std::string full_path, wchar_t *data, unsigned int max_length, unsigned int offset=0);
+    static int get_file_data(std::string full_path, std::wstring *data, unsigned int max_length, unsigned int offset=0);
     void setAppId(uint32 appid);
     static int store_file_data(std::string folder, std::string file, char *data, unsigned int length);
     static std::vector<std::string> get_filenames_path(std::string path);
@@ -70,7 +70,7 @@ public:
     int store_data_settings(std::string file, char *data, unsigned int length);
     int get_data(std::string folder, std::string file, char *data, unsigned int max_length, unsigned int offset = 0);
     int get_data_settings(std::string file, char *data, unsigned int max_length);
-    int get_data_settings(std::string file, wchar_t *data, unsigned int max_length);
+    int get_data_settings(std::string file, std::wstring *data, unsigned int max_length);
     int count_files(std::string folder);
     bool iterate_file(std::string folder, int index, char *output_filename, int32 *output_size);
     bool file_exists(std::string folder, std::string file);
