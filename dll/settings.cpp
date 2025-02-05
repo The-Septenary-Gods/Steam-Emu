@@ -18,11 +18,10 @@
 #include "settings.h"
 #include <codecvt>
 
-std::string wideToUtf8(const std::wstring &wstr)
+std::string wide_name_to_utf8(const std::wstring &wstr)
 {
     try {
-        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::string result = converter.to_bytes(wstr);
+        std::string result = wide_to_utf8(wstr);
 
         // If the result length is less than 17 bytes, pad it to 17 bytes.
         // When result is less than 17 bytes, it shows as random garbage in game.
@@ -34,6 +33,16 @@ std::string wideToUtf8(const std::wstring &wstr)
     } catch (const std::exception&) {
         return INVAILD_USER_NAME;
     }
+}
+
+std::string wide_to_utf8(const std::wstring &wstr) {
+    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.to_bytes(wstr);
+}
+
+std::wstring utf8_to_wide(const std::string& str) {
+    static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    return converter.from_bytes(str);
 }
 
 std::string Settings::sanitize(std::string name)
@@ -95,7 +104,7 @@ CGameID Settings::get_local_game_id()
 
 std::string Settings::get_local_name()
 {
-    return wideToUtf8(this->name);
+    return wide_name_to_utf8(this->name);
 }
 
 const char *Settings::get_language()

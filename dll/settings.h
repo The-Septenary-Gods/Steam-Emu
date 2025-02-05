@@ -67,7 +67,9 @@ struct Controller_Settings {
     std::map<std::string, std::map<std::string, std::pair<std::set<std::string>, std::string>>> action_set_layers;
 };
 
-std::string wideToUtf8(const std::wstring &wstr);
+std::string wide_name_to_utf8(const std::wstring &wstr);
+std::string wide_to_utf8(const std::wstring &wstr);
+std::wstring utf8_to_wide(const std::string& str);
 
 class Settings {
     CSteamID steam_id;
@@ -161,9 +163,6 @@ public:
 
     //app build id
     int build_id = 10;
-
-    //supported languages
-    std::set<std::string> supported_languages;
 
     //make lobby creation fail in the matchmaking interface
     bool disable_lobby_creation = false;

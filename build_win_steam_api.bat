@@ -13,14 +13,14 @@ if not exist build mkdir build
 call build_env_x86.bat
 cd build
 cl ../dll/rtlgenrandom.c ../dll/rtlgenrandom.def
-cl /LD /DEMU_RELEASE_BUILD /DNDEBUG /wd4828 /I%PROTOBUF_X86_DIRECTORY%\include\ ../dll/*.cpp ../dll/*.cc "%PROTOBUF_X86_LIBRARY%" Iphlpapi.lib Ws2_32.lib rtlgenrandom.lib Shell32.lib /EHsc /MP12 /Ox /link /debug:none /OUT:..\release\steam_api.dll
+cl /LD /DEMU_RELEASE_BUILD /DNDEBUG /wd4828 /I%PROTOBUF_X86_DIRECTORY%\include\ ../dll/*.cpp ../dll/*.cc "%PROTOBUF_X86_LIBRARY%" Iphlpapi.lib Ws2_32.lib rtlgenrandom.lib Shell32.lib User32.lib /EHsc /MP12 /Ox /GL /Gy /link /debug:none /OUT:..\release\steam_api.dll
 cd "%~dp0"
 
 "%PROTOC_X64_EXE%" -I.\dll\ --cpp_out=.\dll\ .\dll\net.proto
 call build_env_x64.bat
 cd build
 cl ../dll/rtlgenrandom.c ../dll/rtlgenrandom.def
-cl /LD /DEMU_RELEASE_BUILD /DNDEBUG /wd4828 /I%PROTOBUF_X64_DIRECTORY%\include\ ../dll/*.cpp ../dll/*.cc "%PROTOBUF_X64_LIBRARY%" Iphlpapi.lib Ws2_32.lib rtlgenrandom.lib Shell32.lib /EHsc /MP12 /Ox /link /debug:none /OUT:..\release\steam_api64.dll
+cl /LD /DEMU_RELEASE_BUILD /DNDEBUG /wd4828 /I%PROTOBUF_X64_DIRECTORY%\include\ ../dll/*.cpp ../dll/*.cc "%PROTOBUF_X64_LIBRARY%" Iphlpapi.lib Ws2_32.lib rtlgenrandom.lib Shell32.lib User32.lib /EHsc /MP12 /Ox /GL /Gy /link /debug:none /OUT:..\release\steam_api64.dll
 cd "%~dp0"
 
 copy Readme_release.txt release\Readme.txt

@@ -27,7 +27,7 @@ inline bool protobuf_message_equal(const google::protobuf::MessageLite& msg_a,
 }
 
 
-#define DEFAULT_PORT 47584
+#define DEFAULT_PORT 47585
 
 #if defined(STEAM_WIN32)
 typedef unsigned int sock_t;

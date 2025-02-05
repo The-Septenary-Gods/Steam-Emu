@@ -401,15 +401,6 @@ SteamAPICall_t RequestEncryptedAppTicket( void *pDataToInclude, int cbDataToIncl
     ticket.TicketV2.TicketIssueTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     ticket.TicketV2.TicketValidityEnd = ticket.TicketV2.TicketIssueTime + (21 * 24 * 60 * 60);
 
-    for (int i = 0; i < 140; ++i)
-    {
-        AppId_t appid;
-        bool available;
-        std::string name;
-        if (!settings->getDLC(appid, appid, available, name)) break;
-        ticket.TicketV4.AppIDs.emplace_back(appid);
-    }
-
     ticket.TicketV4.HasVACStatus = true;
     ticket.TicketV4.VACStatus = 0;
 
