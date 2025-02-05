@@ -21,7 +21,7 @@
 std::string wideToUtf8(const std::wstring &wstr)
 {
     try {
-        static std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
         std::string result = converter.to_bytes(wstr);
 
         // If the result length is less than 17 bytes, pad it to 17 bytes.

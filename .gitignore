@@ -1,5 +1,6 @@
 .vs/*
 .vscode/*
+.zig-cache/*
 /release/*
 /build*/
 /dll/net.pb.cc

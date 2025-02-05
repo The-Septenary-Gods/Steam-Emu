@@ -272,6 +272,9 @@ std::string canonical_path(std::string path)
 bool file_exists_(std::string full_path)
 {
 #if defined(STEAM_WIN32)
+    #ifndef _MSC_VER
+    #define _S_IFDIR 0x4000
+    #endif
     struct _stat buffer;
     if (_wstat(utf8_decode(full_path).c_str(), &buffer) != 0)
         return false;

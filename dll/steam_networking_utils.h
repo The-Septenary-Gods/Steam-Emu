@@ -646,6 +646,8 @@ void SteamNetworkingIdentity_ToString( const SteamNetworkingIdentity &identity, 
             str = identity.m_szUnknownRawString;
         }
         break;
+        default:
+            break;
     }
     cbBuf = std::min<size_t>(cbBuf, str.length() + 1);
     strncpy(buf, str.c_str(), cbBuf);
