@@ -162,8 +162,8 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     // Check if the dynamic library was loaded
     if (!hDylib) {
         fatal_error(
-            L"Failed to load Steam API settings",
-            L"加载 Steam API 设置失败"
+            L"Failed to load Steam API settings library",
+            L"无法加载 Steam API 设置库"
         );
     }
 
