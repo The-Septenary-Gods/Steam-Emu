@@ -37,7 +37,7 @@ For example on Windows: Copy `release\steam_api64.dll` to `<Game Root Directory>
 
 This repository obtains configuration information by calling `steam_api64_settings.dll` (`libsteam_api64_settings.so` on *nix systems) located in the same directory.
 
-For details on interface implementations, see [`include/steam_emu_settings.h`](include/steam_emu_settings.h).
+For details on interface implementations, see [`include/steam_api64_settings.h`](include/steam_api64_settings.h).
 
 ## License
 
