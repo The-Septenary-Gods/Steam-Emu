@@ -22,8 +22,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
-const HANDLE hConsole = GetStdHandle(STD_ERROR_HANDLE);
-CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
+extern HANDLE hConsole;
+extern CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 #endif
 
 const std::string LOGGING_PREFIX = 
@@ -39,62 +39,12 @@ const std::wstring LOGGING_PREFIX_W =
     L"SteamAPI: ";
 #endif
 
-inline void fatal_error(const std::wstring& error_msg_en, const std::wstring& error_msg_zh) {
-    // Check system language
-    bool is_zh = (GetSystemDefaultUILanguage() & 0xFF) == LANG_CHINESE;
-    const std::wstring& msg = is_zh ? error_msg_zh : error_msg_en;
-    const std::wstring& title = is_zh ? L"致命错误" : L"Fatal Error";
-    const std::wstring& fatal_prefix = LOGGING_PREFIX_W + L"Fatal Error: ";
+void fatal_error(const std::wstring& error_msg_en, const std::wstring& error_msg_zh);
 
-#if defined(_WIN32) || defined(_WIN64)
-    // Print error message to console on Windows
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    std::wcerr << fatal_prefix << error_msg_en << std::endl;
-    SetConsoleTextAttribute(hConsole, consoleInfo.wAttributes);
+void logger(const std::string& msg, const std::string& type = "Display");
 
-    // Show error message box on Windows
-    MessageBoxW(NULL, msg.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
-#else
-    // Print error message to console on *nix
-    std::wcerr << "\033[1;31m" << fatal_prefix << msg << "\033[0m" << std::endl;
-#endif
+void logger(const std::wstring& msg, const std::wstring& type = L"Display");
 
-    exit(1);
-}
+void warning_logger(const std::wstring& msg);
 
-inline void logger(const std::string& msg, const std::string& type = "Display") {
-    const std::string prefix = LOGGING_PREFIX + type + ": ";
-    std::cout << prefix << msg << std::endl;
-}
-
-inline void logger(const std::wstring& msg, const std::wstring& type = L"Display") {
-    const std::wstring prefix = LOGGING_PREFIX_W + type + L": ";
-    std::wcout << prefix << msg << std::endl;
-}
-
-inline void warning_logger(const std::wstring& msg) {
-    const std::wstring prefix = LOGGING_PREFIX_W + L"Warning: ";
-
-#if defined(_WIN32) || defined(_WIN64)
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); // Yellow
-    std::wcout << prefix << msg << std::endl;
-    SetConsoleTextAttribute(hConsole, consoleInfo.wAttributes);
-#else
-    std::wcout << prefix << msg << std::endl;
-#endif
-}
-
-inline void error_logger(const std::wstring& msg) {
-    const std::wstring prefix = LOGGING_PREFIX_W + L"Error: ";
-
-#if defined(_WIN32) || defined(_WIN64)
-    GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-    SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
-    std::wcout << prefix << msg << std::endl;
-    SetConsoleTextAttribute(hConsole, consoleInfo.wAttributes);
-#else
-    std::wcout << prefix << msg << std::endl;
-#endif
-}
+void error_logger(const std::wstring& msg);
