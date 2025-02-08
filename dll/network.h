@@ -1,5 +1,6 @@
 /* Copyright (C) 2019 Mr Goldberg
-   This file is part of the Goldberg Emulator
+   Copyright (C) 2025 The Septenary Gods
+   This file is part of the Goldberg Emulator and TSG's Steam Emu.
 
    The Goldberg Emulator is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
