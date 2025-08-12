@@ -18,6 +18,7 @@ struct ApiSettings {
 // https://partner.steamgames.com/doc/store/localization/languages
 
 // Initialize the dynamic library, call once before everything starts
+// Bool-style return value: 0 for failure, non-0 for success
 int init_dylib(void);
 // Get the settings from the dynamic library
 struct ApiSettings* get_settings(void);
