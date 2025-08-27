@@ -25,7 +25,20 @@ vcpkg install --triplet x64-windows-static
 .\build_win_steam_api.bat
 ```
 
-> This repository has only been tested on Windows platform, and may not work properly on other platforms.
+#### Linux
+
+``` Bash
+# Update package list
+sudo apt update
+
+# Install C++ build tools and dependencies
+sudo apt install -y clang cmake libprotobuf-dev protobuf-compiler ninja-build
+
+# Build libsteam_api64.so
+./build_linux_steam_api.sh
+```
+
+> Building for 32-bit (x86 / i386) targets on both Windows and Linux is currently unsupported due to complex multi-architecture dependency requirements. This includes `steam_api.dll` and `libsteam_api.so`.
 
 ### Installing
 
