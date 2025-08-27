@@ -35,7 +35,7 @@ sudo apt update
 sudo apt install -y clang cmake libprotobuf-dev protobuf-compiler ninja-build
 
 # Build libsteam_api64.so
-./build_linux_release.sh
+./build_linux_steam_api.sh
 ```
 
 > Building for 32-bit (x86 / i386) targets on both Windows and Linux is currently unsupported due to complex multi-architecture dependency requirements. This includes `steam_api.dll` and `libsteam_api.so`.
