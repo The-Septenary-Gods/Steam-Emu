@@ -19,6 +19,12 @@
 #include "settings_parser.h"
 #include "steam_api_logger.hpp"
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
 static void consume_bom(std::ifstream &input)
 {
     int bom[3];
@@ -137,7 +143,7 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     setlocale(LC_ALL, "en_US.UTF-8");
 
     // Load the dynamic library
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
     // Get current DLL path
     wchar_t dllPath[MAX_PATH];
     HMODULE hCurrentModule;
@@ -157,7 +163,7 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
 
     HMODULE hDylib = LoadLibraryW(dllPath);
 #else
-    void* hDylib = dlopen("./libsteam_api64_settings.so", RTLD_LAZY);
+    void* hDylib = dlopen("./libsteam_api.so", RTLD_LAZY);
 #endif
 
     // Check if the dynamic library was loaded
@@ -170,16 +176,28 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
 
     // Init dynamic library
     {
+#if defined(_WIN32)
         auto init_settings_dylib = (int (*)(void))GetProcAddress(hDylib, "init_dylib");
+#else
+        auto init_settings_dylib = (int (*)(void))dlsym(hDylib, "init_dylib");
+#endif
         if (!init_settings_dylib) {
+#if defined(_WIN32)
             FreeLibrary(hDylib);
+#else
+            dlclose(hDylib);
+#endif
             fatal_error(
                 L"Settings library does not have an init method, this may not be a valid settings library",
                 L"设置库不存在初始化方法，这可能不是一个合法的设置库"
             );
         }
         if (!init_settings_dylib()) {
+#if defined(_WIN32)
             FreeLibrary(hDylib);
+#else
+            dlclose(hDylib);
+#endif
             fatal_error(
                 L"Failed to initialize settings library, the library may have issues",
                 L"初始化设置库失败，库可能存在问题"
@@ -188,10 +206,19 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     }
 
     // Get function pointers
+#if defined(_WIN32)
     auto get_settings   = (ApiSettings* (*)(void))          GetProcAddress(hDylib, "get_settings");
     auto free_info_func = (void (*)(ApiSettings* settings)) GetProcAddress(hDylib, "free_settings");
+#else
+    auto get_settings   = (ApiSettings* (*)(void))          dlsym(hDylib, "get_settings");
+    auto free_info_func = (void (*)(ApiSettings* settings)) dlsym(hDylib, "free_settings");
+#endif
     if (!get_settings || !free_info_func) {
+#if defined(_WIN32)
         FreeLibrary(hDylib);
+#else
+        dlclose(hDylib);
+#endif
         fatal_error(
             L"Failed to get pointer, the settings dylib may corrupted",
             L"获取设置库指针失败，库可能已损坏"
@@ -201,7 +228,11 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
     // Get settings
     ApiSettings* apiSettings = get_settings();
     if (!apiSettings) {
+#if defined(_WIN32)
         FreeLibrary(hDylib);
+#else
+        dlclose(hDylib);
+#endif
         fatal_error(
             L"Failed to get Steam API settings",
             L"获取 Steam API 设置失败"
@@ -287,7 +318,11 @@ uint32 create_localstorage_settings(Settings **settings_client_out, Settings **s
 
     // Free the settings, collect garbage
     free_info_func(apiSettings);
+#if defined(_WIN32)
     FreeLibrary(hDylib);
+#else
+    dlclose(hDylib);
+#endif
 
     Settings *settings_client = new Settings(user_id, CGameID(appid), name, language, steam_offline_mode);
     Settings *settings_server = new Settings(generate_steam_id_server(), CGameID(appid), name, language, steam_offline_mode);

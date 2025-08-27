@@ -18,19 +18,24 @@
 
 #include "steam_api_logger.hpp"
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
 HANDLE hConsole = GetStdHandle(STD_ERROR_HANDLE);
 CONSOLE_SCREEN_BUFFER_INFO consoleInfo;
 #endif
 
 void fatal_error(const std::wstring& error_msg_en, const std::wstring& error_msg_zh) {
+#if defined(_WIN32)
     // Check system language
     bool is_zh = (GetSystemDefaultUILanguage() & 0xFF) == LANG_CHINESE;
     const std::wstring& msg = is_zh ? error_msg_zh : error_msg_en;
     const std::wstring& title = is_zh ? L"致命错误" : L"Fatal Error";
+#else
+    const std::wstring& msg = error_msg_en;
+    const std::wstring& title = L"Fatal Error";
+#endif
     const std::wstring& fatal_prefix = LOGGING_PREFIX_W + L"Fatal Error: ";
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
     // Print error message to console on Windows
     GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
@@ -60,25 +65,25 @@ void logger(const std::wstring& msg, const std::wstring& type) {
 void warning_logger(const std::wstring& msg) {
     const std::wstring prefix = LOGGING_PREFIX_W + L"Warning: ";
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
     GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY); // Yellow
     std::wcout << prefix << msg << std::endl;
     SetConsoleTextAttribute(hConsole, consoleInfo.wAttributes);
 #else
-    std::wcout << prefix << msg << std::endl;
+    std::wcout << "\033[1;33m" << prefix << msg << "\033[0m" << std::endl;
 #endif
 }
 
 void error_logger(const std::wstring& msg) {
     const std::wstring prefix = LOGGING_PREFIX_W + L"Error: ";
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
     GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
     SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_INTENSITY);
     std::wcout << prefix << msg << std::endl;
     SetConsoleTextAttribute(hConsole, consoleInfo.wAttributes);
 #else
-    std::wcout << prefix << msg << std::endl;
+    std::wcout << "\033[1;31m" << prefix << msg << "\033[0m" << std::endl;
 #endif
 }
